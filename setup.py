@@ -8,11 +8,11 @@ def readme():
 
 setup(
     name='kaira',
-    version='0.1.1',
+    version='0.1.2',
     packages=['kaira', 'kaira.routing'],
     url='https://github.com/mulonemartin/kaira/',
     license='MIT',
-    author='martin',
+    author='Martin Mulone',
     author_email='mulone.martin@gmail.com',
     description='Web Microframework - Python',
     long_description=readme(),
