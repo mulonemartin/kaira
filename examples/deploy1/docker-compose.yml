@@ -1,0 +1,7 @@
+app:
+  build: ./app
+  volumes:
+      - /home/martin/kaira/examples/deploy1/app:/home/www-data/app/src
+      - /home/martin/kaira:/home/www-data/app/kaira
+  ports:
+    - "8000:8000"
