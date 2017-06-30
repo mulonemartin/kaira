@@ -161,6 +161,7 @@ class App:
         """Dynamic handler"""
 
         request = HTTPRequest(environ, 'utf-8')
+        request.app = self
 
         try:
             response = self.run_dispatcher(request)
