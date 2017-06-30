@@ -79,8 +79,13 @@ class App:
 
         return decorator
 
+    def path_for(self, name, **kwargs):
+        """ path for """
+
+        return self.router.path_for(name, **kwargs)
+
     def route(self, path,
-              id_name=None,
+              name=None,
               methods=frozenset({"GET"}),
               context=None,
               on_request=None,
@@ -93,7 +98,7 @@ class App:
 
         def decorator(f):
             self.add_url_rule(path,
-                              id_name=id_name,
+                              name=name,
                               route_func=f,
                               methods=methods,
                               context=context,
@@ -104,7 +109,7 @@ class App:
         return decorator
 
     def add_url_rule(self, path,
-                     id_name=None,
+                     name=None,
                      route_func=None,
                      methods=frozenset({"GET"}),
                      context=None,
@@ -139,7 +144,7 @@ class App:
             route_hand = match_obj
         else:
             route_hand = RouteHandler(path=path,
-                                      id_name=id_name,
+                                      name=name,
                                       route_func=route_func,
                                       methods=methods
                                       )
@@ -153,9 +158,9 @@ class App:
             route_hand.handlers[method] = route_method
 
         if not match_obj:
-            self.router.add_route(path, route_hand, name=route_hand.id_name)
+            self.router.add_route(path, route_hand, name=route_hand.name)
 
-        log.info('Route added. Path: %s Name: %s' % (path, route_hand.id_name))
+        log.info('Route added. Path: %s Name: %s' % (path, route_hand.name))
 
     def dynamic_handler(self, environ, start_response):
         """Dynamic handler"""
@@ -211,6 +216,7 @@ class App:
             request.path += '/'
         match_obj, match_dict = self.router.match(request.path)
         if match_obj:
+
             try:
                 del match_dict['route_name']  # remove route_name key from dictionary
             except KeyError:

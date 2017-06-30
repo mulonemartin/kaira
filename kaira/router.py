@@ -11,10 +11,6 @@ from kaira.routing.utils import route_name
 
 
 class RouteMethodHandler:
-    func = None
-    context = None
-    on_request = None
-    on_response = None
 
     def __init__(self,
                  func=None,
@@ -33,17 +29,16 @@ class RouteMethodHandler:
 class RouteHandler(object):
     """ Route handler """
 
-    func = None
-    handlers = dict()
-
     def __init__(self,
                  path=None,
-                 id_name=None,
+                 name=None,
                  route_func=None,
                  methods=frozenset({"GET"})
                  ):
+
+        self.handlers = dict()
         self.path = path
-        self.id_name = id_name
+        self.name = name
         self.route_func = route_func
         self.methods = methods
 
@@ -56,8 +51,8 @@ class RouteHandler(object):
 
         if self.path:
             self.path = '/' + self.route_func.__name__ + '(.\w+)?'
-        if not self.id_name:
-            self.id_name = self.func_name
+        if not self.name:
+            self.name = self.func_name
         if not self.path.startswith('/'):
             self.path = '/' + self.path
         if not self.path.endswith('/'):
