@@ -5,11 +5,12 @@ from traceback import format_exc
 
 from kaira.log import log
 from kaira.config import Config, LOGGING
-from kaira.router import RouteHandler, PathRouter
+from kaira.router import RouteHandler, PathRouter, RouteMethodHandler
 from kaira.server import run
 from kaira.wrapper import WrapWithContextManager
-from kaira.request import HTTPRequest
-from kaira.exceptions import BaseExceptionHTTP, ERR_DETAIL, ERR_CSS, ERR_TEMPLATE, HTTPNotFound
+from kaira.request import HTTPRequest, HTTP_METHODS
+from kaira.exceptions import BaseExceptionHTTP, ERR_DETAIL, ERR_CSS, ERR_TEMPLATE, \
+    HTTPNotFound, HTTPMethodNotAllowed
 from kaira.response import response as kaira_response
 from kaira.statics import StaticHandler
 
@@ -81,7 +82,9 @@ class App:
     def route(self, path,
               id_name=None,
               methods=frozenset({"GET"}),
-              context=None):
+              context=None,
+              on_request=None,
+              on_response=None):
         """
             @app.route('/')
             def index():
@@ -93,7 +96,9 @@ class App:
                               id_name=id_name,
                               route_func=f,
                               methods=methods,
-                              context=context)
+                              context=context,
+                              on_request=on_request,
+                              on_response=on_response)
             return f
 
         return decorator
@@ -102,7 +107,9 @@ class App:
                      id_name=None,
                      route_func=None,
                      methods=frozenset({"GET"}),
-                     context=None):
+                     context=None,
+                     on_request=None,
+                     on_response=None):
         """
         Basically this example::
             @app.route('/')
@@ -115,20 +122,38 @@ class App:
         
         """
 
-        route_hand = RouteHandler(path=path,
-                                  id_name=id_name,
-                                  route_func=route_func,
-                                  methods=methods,
-                                  context=context
-                                  )
-
-        wrapped_func = WrapWithContextManager(context)(route_func)
-        route_hand.func = wrapped_func
-
         if not path.endswith('/'):
             path += '/'
 
-        self.router.add_route(path, route_hand, name=route_hand.id_name)
+        methods = frozenset(map(lambda x: x.upper(), methods))
+
+        if not frozenset(methods).issubset(frozenset(HTTP_METHODS)):
+            raise ValueError("Not valid method. Only ('GET', 'POST', 'PUT', "
+                             "'HEAD', 'OPTIONS', 'PATCH', 'DELETE')")
+
+        wrapped_func = WrapWithContextManager(context)(route_func)
+
+        # if already exist
+        match_obj, match_dict = self.router.match(path)
+        if match_obj:
+            route_hand = match_obj
+        else:
+            route_hand = RouteHandler(path=path,
+                                      id_name=id_name,
+                                      route_func=route_func,
+                                      methods=methods
+                                      )
+
+        for method in methods:
+            route_method = RouteMethodHandler(func=wrapped_func,
+                                              method=method,
+                                              context=context,
+                                              on_request=on_request,
+                                              on_response=on_response)
+            route_hand.handlers[method] = route_method
+
+        if not match_obj:
+            self.router.add_route(path, route_hand, name=route_hand.id_name)
 
         log.info('Route added. Path: %s Name: %s' % (path, route_hand.id_name))
 
@@ -190,7 +215,21 @@ class App:
             except KeyError:
                 pass
 
-            response = match_obj.func(request, **match_dict)
+            try:
+                method_handler = match_obj.handlers[request.method]
+            except KeyError:
+                raise HTTPMethodNotAllowed()
+
+            if method_handler.on_request:
+                for func_on_req in method_handler.on_request:
+                    func_on_req(request)
+
+            response = method_handler.func(request, **match_dict)
+
+            if method_handler.on_response:
+                for func_on_resp in method_handler.on_response:
+                    func_on_resp(request, response)
+
         else:
             raise HTTPNotFound()
 

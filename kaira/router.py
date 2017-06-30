@@ -10,23 +10,42 @@ from kaira.routing.config import route_builders as default_route_builders
 from kaira.routing.utils import route_name
 
 
+class RouteMethodHandler:
+    func = None
+    context = None
+    on_request = None
+    on_response = None
+
+    def __init__(self,
+                 func=None,
+                 method=frozenset({"GET"}),
+                 context=None,
+                 on_request=None,
+                 on_response=None
+                 ):
+        self.func = func
+        self.method = method
+        self.context = context
+        self.on_request = on_request
+        self.on_response = on_response
+
+
 class RouteHandler(object):
     """ Route handler """
 
     func = None
+    handlers = dict()
 
     def __init__(self,
                  path=None,
                  id_name=None,
                  route_func=None,
-                 methods=frozenset({"GET"}),
-                 context=None
+                 methods=frozenset({"GET"})
                  ):
         self.path = path
         self.id_name = id_name
         self.route_func = route_func
         self.methods = methods
-        self.context = context
 
         if not route_func:
             raise ValueError('You must pass a function')

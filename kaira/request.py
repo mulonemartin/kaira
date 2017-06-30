@@ -29,6 +29,7 @@ except AttributeError:  # pragma: nocover
 
 
 MULTIPART_ENVIRON = {'REQUEST_METHOD': 'POST'}
+HTTP_METHODS = ('GET', 'POST', 'PUT', 'HEAD', 'OPTIONS', 'PATCH', 'DELETE')
 
 
 class attribute(object):

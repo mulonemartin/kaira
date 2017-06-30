@@ -31,6 +31,11 @@ class HTTPNotFound(BaseExceptionHTTP):
     default_detail = 'Not found'
 
 
+class HTTPMethodNotAllowed(BaseExceptionHTTP):
+    default_status_code = 405
+    default_detail = 'Method Not Allowed'
+
+
 ERR_DETAIL = {
     # Client Error
     400: 'Bad Request',
