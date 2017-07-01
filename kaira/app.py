@@ -99,7 +99,7 @@ class App:
         def decorator(f):
             self.add_url_rule(path,
                               name=name,
-                              route_func=f,
+                              handler=f,
                               methods=methods,
                               context=context,
                               on_request=on_request,
@@ -110,22 +110,12 @@ class App:
 
     def add_url_rule(self, path,
                      name=None,
-                     route_func=None,
+                     handler=None,
                      methods=frozenset({"GET"}),
                      context=None,
                      on_request=None,
                      on_response=None):
-        """
-        Basically this example::
-            @app.route('/')
-            def index():
-                pass
-        Is equivalent to the following::
-            def index():
-                pass
-            app.add_url_rule('/', 'index', index)
-        
-        """
+        """ """
 
         if not path.endswith('/'):
             path += '/'
@@ -136,7 +126,7 @@ class App:
             raise ValueError("Not valid method. Only ('GET', 'POST', 'PUT', "
                              "'HEAD', 'OPTIONS', 'PATCH', 'DELETE')")
 
-        wrapped_func = WrapWithContextManager(context)(route_func)
+        wrapped_func = WrapWithContextManager(context)(handler)
 
         # if already exist
         match_obj, match_dict = self.router.match(path)
@@ -145,7 +135,7 @@ class App:
         else:
             route_hand = RouteHandler(path=path,
                                       name=name,
-                                      route_func=route_func,
+                                      route_func=handler,
                                       methods=methods
                                       )
 
