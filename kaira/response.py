@@ -125,8 +125,12 @@ class HTTPResponse(BASEHTTPResponse):
             append(HTTP_HEADER_CACHE_CONTROL_DEFAULT)
         if self.cookies:
             encoding = self.encoding
-            for cookie in self.cookies:
-                append(cookie.http_set_cookie(encoding))
+            if isinstance(self.cookies, dict):
+                for key, cookie in self.cookies.items():
+                    append(cookie.http_set_cookie(encoding))
+            else:
+                for cookie in self.cookies:
+                    append(cookie.http_set_cookie(encoding))
         buffer = self.buffer
         append(('Content-Length', str(sum([len(chunk) for chunk in buffer]))))
         start_response(HTTP_STATUS[self.status_code], headers)
@@ -187,21 +191,34 @@ class HandleResponse:
         return resp
 
     @staticmethod
-    def redirect(to, status_code=302, encoding="utf-8"):
+    def redirect(to, status_code=302, cookies=None, encoding="utf-8", headers=None):
         """ redirect """
 
         resp = HTTPResponse('text/html; charset=' + encoding, encoding,
                             status_code=status_code)
+        if cookies:
+            resp.cookies = cookies
+        if headers:
+            for header in headers:
+                resp.headers.append(header)
+
         resp.redirect(to, status_code=status_code)
 
         return resp
 
     @staticmethod
-    def error(body, status_code=400, encoding="utf-8"):
+    def error(body, status_code=400, cookies=None, encoding="utf-8", headers=None):
         """ error """
 
         resp = HTTPResponse('text/html; charset=' + encoding, encoding,
                             status_code=status_code)
+
+        if cookies:
+            resp.cookies = cookies
+        if headers:
+            for header in headers:
+                resp.headers.append(header)
+
         resp.write_bytes(body.encode(encoding))
 
         return resp

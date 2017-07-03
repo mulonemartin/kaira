@@ -69,3 +69,28 @@ class HTTPCookie(object):
         if self.httponly:
             append('; httponly')
         return ('Set-Cookie', ''.join(directives))
+
+
+class CookieManager(dict):
+    """  """
+
+    def __init__(self, options):
+        super().__init__()
+        self.options = options
+
+    def __setitem__(self, key, value):
+        # If this cookie doesn't exist, add it to the header keys
+        cookie = HTTPCookie(key, value, options=self.options)
+        return super().__setitem__(key, cookie)
+
+    def __delitem__(self, key):
+
+        if key not in self:
+            cookie = HTTPCookie(key, '', options=self.options)
+            cookie.expires = 'Sat, 01 Jan 2000 00:00:01 GMT'
+            #self[key] = cookie
+            super().__setitem__(key, cookie)
+        else:
+            #self[key] = ''
+            self[key].expires = 'Sat, 01 Jan 2000 00:00:01 GMT'
+
