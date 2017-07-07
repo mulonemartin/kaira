@@ -19,11 +19,15 @@ class HTTPRedirect(BaseExceptionHTTP):
 
     default_status_code = 302
     default_detail = ''
+    cookies = None
+    headers = None
 
-    def __init__(self, absolute_url, detail=None, status_code=None):
+    def __init__(self, absolute_url, detail=None, status_code=None, cookies=None, headers=None):
 
-        self.absolute_url = absolute_url
         super().__init__(detail, status_code)
+        self.absolute_url = absolute_url
+        self.cookies = cookies
+        self.header = headers
 
 
 class HTTPNotFound(BaseExceptionHTTP):
@@ -34,6 +38,20 @@ class HTTPNotFound(BaseExceptionHTTP):
 class HTTPMethodNotAllowed(BaseExceptionHTTP):
     default_status_code = 405
     default_detail = 'Method Not Allowed'
+
+
+class HandleException:
+
+    @staticmethod
+    def redirect(absolute_url, detail=None, status_code=None, cookies=None, headers=None):
+        """ text """
+
+        resp = HTTPRedirect(absolute_url, detail=detail, status_code=status_code,
+                            cookies=cookies, headers=headers)
+        return resp
+
+
+http_exception = HandleException()
 
 
 ERR_DETAIL = {

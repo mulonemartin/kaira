@@ -3,6 +3,7 @@ README.rst
 setup.py
 kaira\__init__.py
 kaira\app.py
+kaira\blueprints.py
 kaira\config.py
 kaira\cookie.py
 kaira\exceptions.py

@@ -8,13 +8,13 @@ def readme():
 
 setup(
     name='kaira',
-    version='0.1.2',
+    version='0.1.3',
     packages=['kaira', 'kaira.routing'],
     url='https://github.com/mulonemartin/kaira/',
     license='MIT',
     author='Martin Mulone',
     author_email='mulone.martin@gmail.com',
-    description='Web Microframework - Python',
+    description='Web Micro framework - Python',
     long_description=readme(),
     install_requires=[
               'whitenoise'

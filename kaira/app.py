@@ -176,7 +176,8 @@ class App:
                                                         err_css=err_css)
                     response = kaira_response.html(html_template, status_code=e.status_code)
             elif 300 <= e.status_code <= 307:
-                kaira_response.redirect(e.absolute_url, e.status_code)
+                response = kaira_response.redirect(e.absolute_url, e.status_code,
+                                                   cookies=e.cookies, headers=e.headers)
             else:
                 raise NotImplemented("Invalid status code only 300 or 400 http codes")
 
