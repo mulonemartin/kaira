@@ -22,5 +22,16 @@ def hello_world_raise(request):
     raise http_exception.redirect('/')
 
 
+@app.route("/raise/text")
+def hello_world_raise_text(request):
+
+    raise http_exception.text('Hellow world', status_code=200)
+
+
+@app.route("/raise/json")
+def hello_world_raise_json(request):
+    raise http_exception.json('Hellow world', status_code=200)
+
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8000)

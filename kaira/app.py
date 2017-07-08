@@ -10,7 +10,7 @@ from kaira.server import run
 from kaira.wrapper import WrapWithContextManager
 from kaira.request import HTTPRequest, HTTP_METHODS
 from kaira.exceptions import BaseExceptionHTTP, ERR_DETAIL, ERR_CSS, ERR_TEMPLATE, \
-    HTTPNotFound, HTTPMethodNotAllowed
+    HTTPNotFound, HTTPMethodNotAllowed, HTTPError
 from kaira.response import response as kaira_response
 from kaira.statics import StaticHandler
 
@@ -160,6 +160,14 @@ class App:
 
         try:
             response = self.run_dispatcher(request)
+        except HTTPError as e:
+            if e.content_type in ['text']:
+                response = kaira_response.text(e.detail, e.status_code,
+                                               cookies=e.cookies, headers=e.headers)
+            elif e.content_type in ['json']:
+                response = kaira_response.json(e.detail, e.status_code,
+                                               cookies=e.cookies, headers=e.headers)
+
         except BaseExceptionHTTP as e:
             if 400 <= e.status_code <= 505:
                 if e.status_code in self.error_routes:

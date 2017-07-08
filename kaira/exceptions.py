@@ -12,7 +12,18 @@ class BaseExceptionHTTP(Exception):
 
 
 class HTTPError(BaseExceptionHTTP):
-    pass
+    default_status_code = 500
+    default_detail = 'Server error'
+    cookies = None
+    headers = None
+    content_type = 'text'
+
+    def __init__(self, detail=None, status_code=None, cookies=None, headers=None, content_type='text'):
+        super().__init__(detail=detail, status_code=status_code)
+
+        self.cookies = cookies
+        self.header = headers
+        self.content_type = content_type
 
 
 class HTTPRedirect(BaseExceptionHTTP):
@@ -44,10 +55,26 @@ class HandleException:
 
     @staticmethod
     def redirect(absolute_url, detail=None, status_code=None, cookies=None, headers=None):
-        """ text """
+        """ redirect """
 
         resp = HTTPRedirect(absolute_url, detail=detail, status_code=status_code,
                             cookies=cookies, headers=headers)
+        return resp
+
+    @staticmethod
+    def json(body, status_code=None, cookies=None, headers=None):
+        """ json """
+
+        resp = HTTPError(body, status_code=status_code, cookies=cookies,
+                         headers=headers, content_type='json')
+        return resp
+
+    @staticmethod
+    def text(body, status_code=None, cookies=None, headers=None):
+        """ text """
+
+        resp = HTTPError(body, status_code=status_code, cookies=cookies,
+                         headers=headers, content_type='text')
         return resp
 
 
