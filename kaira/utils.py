@@ -1,5 +1,6 @@
 from time import localtime
 from time import mktime
+import html
 
 from datetime import datetime
 from datetime import timedelta
@@ -15,6 +16,12 @@ MONTHS = (
 
 bytes_type = bytes
 str_type = str
+
+
+def sanitize(text):
+    """Gets rid of < and > and & and, for good measure, :"""
+
+    return html.escape(text, quote=True).replace(':', '&#58;')
 
 
 def n(s, encoding='latin1'):
