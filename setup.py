@@ -17,7 +17,7 @@ setup(
     description='Web Micro framework - Python',
     long_description=readme(),
     install_requires=[
-              'whitenoise'
+              'whitenoise', 'wtforms', 'multidict'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
