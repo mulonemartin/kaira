@@ -1,0 +1,38 @@
+<form method="POST" action="/register">
+    <div>${form.username.label}: ${form.username()}</div>
+    % if form.username.errors:
+        % for error in form.username.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.email.label}: ${form.email()}</div>
+    % if form.email.errors:
+        % for error in form.email.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.password.label}: ${form.password()}</div>
+    % if form.password.errors:
+        % for error in form.password.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.confirm.label}: ${form.confirm()}</div>
+    % if form.confirm.errors:
+        % for error in form.confirm.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.accept_tos.label}: ${form.accept_tos()}</div>
+    % if form.accept_tos.errors:
+        % for error in form.accept_tos.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <button type="submit"> Register </button>
+</form>

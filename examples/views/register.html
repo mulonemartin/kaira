@@ -1,0 +1,25 @@
+<form method="POST" action="/register">
+    <div>${form.username.label}: ${form.username()}</div>
+    % if form.username.errors:
+        % for error in form.username.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.email.label}: ${form.email()}</div>
+    % if form.email.errors:
+        % for error in form.email.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.accept_rules.label}: ${form.accept_rules()}</div>
+    % if form.accept_rules.errors:
+        % for error in form.accept_rules.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+    <button type="submit"> Save </button>
+</form>
+
+

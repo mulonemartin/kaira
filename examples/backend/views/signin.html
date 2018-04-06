@@ -1,0 +1,17 @@
+<form method="POST" action="/signin">
+    <div>${form.username.label}: ${form.username()}</div>
+    % if form.username.errors:
+        % for error in form.username.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.password.label}: ${form.password()}</div>
+    % if form.password.errors:
+        % for error in form.password.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <button type="submit"> Signin </button>
+</form>
