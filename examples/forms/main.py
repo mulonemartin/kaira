@@ -1,6 +1,9 @@
+import re
+import os
+
 from wtforms import Form, BooleanField, StringField, validators, \
     TextAreaField, PasswordField, SelectField, SelectMultipleField, \
-    IntegerField, FormField, RadioField, DateField
+    IntegerField, FormField, RadioField, DateField, FileField
 
 
 from kaira.app import App
@@ -29,9 +32,9 @@ class RegistrationForm(KairaForm):
 
 
 class TestForm(KairaForm):
-    language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
-    multiple = SelectMultipleField(u'cpp', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
-    radio = RadioField(u'One', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+    language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')], default='py')
+    multiple = SelectMultipleField(u'cpp', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')], default='py')
+    radio = RadioField(u'One', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')], default='py')
     accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
     date = DateField(u'Date', format='%Y-%m-%d')
 
@@ -40,6 +43,11 @@ class TelephoneForm(KairaForm):
     country_code = IntegerField('Country Code', [validators.required()])
     area_code = IntegerField('Area Code/Exchange', [validators.required()])
     number = StringField('Number')
+
+
+class UploadForm(KairaForm):
+    image = FileField(u'Image File')
+    description = TextAreaField(u'Image Description')
 
 
 class ContactForm(KairaForm):

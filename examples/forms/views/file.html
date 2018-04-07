@@ -1,0 +1,18 @@
+<form method="POST" enctype="multipart/form-data" action="/">
+    <div>${form.image.label}: ${form.image()}</div>
+    % if form.image.errors:
+        % for error in form.image.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.description.label}: ${form.description()}</div>
+    % if form.description.errors:
+        % for error in form.description.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+
+    <button type="submit"> Send </button>
+</form>
