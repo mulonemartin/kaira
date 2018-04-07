@@ -1,4 +1,6 @@
-from wtforms import Form, BooleanField, StringField, validators, TextAreaField, PasswordField
+from wtforms import Form, BooleanField, StringField, validators, \
+    TextAreaField, PasswordField, SelectField, SelectMultipleField, \
+    IntegerField, FormField, RadioField, DateField
 
 
 from kaira.app import App
@@ -26,6 +28,27 @@ class RegistrationForm(KairaForm):
     accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
 
 
+class TestForm(KairaForm):
+    language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+    multiple = SelectMultipleField(u'cpp', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+    radio = RadioField(u'One', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+    accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
+    date = DateField(u'Date', format='%Y-%m-%d')
+
+
+class TelephoneForm(KairaForm):
+    country_code = IntegerField('Country Code', [validators.required()])
+    area_code = IntegerField('Area Code/Exchange', [validators.required()])
+    number = StringField('Number')
+
+
+class ContactForm(KairaForm):
+    first_name = StringField()
+    last_name = StringField()
+    mobile_phone = FormField(TelephoneForm)
+    office_phone = FormField(TelephoneForm)
+
+
 @app.route("/", methods=['GET'])
 def index(request):
 
@@ -42,11 +65,22 @@ def form_signin(request):
     return response.template('signin.html', form=form)
 
 
+@app.route("/test", methods=['GET', 'POST'])
+def form_test(request):
+
+    form = TestForm(request)
+    if form.validate_on_submit():
+        return response.redirect('/account')
+
+    return response.template('test.html', form=form)
+
+
 @app.route("/register", methods=['GET', 'POST'])
 def form_register(request):
 
     form = RegistrationForm(request)
     if form.validate_on_submit():
+        print(form.username.data)
         return response.redirect('/success')
 
     return response.template('register.html', form=form)

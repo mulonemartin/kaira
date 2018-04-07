@@ -1,0 +1,40 @@
+<form method="POST" action="/test">
+    <div>${form.language.label}: ${form.language()}</div>
+    % if form.language.errors:
+        % for error in form.language.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.multiple.label}: ${form.multiple()}</div>
+    % if form.multiple.errors:
+        % for error in form.multiple.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.radio.label}: ${form.radio()}</div>
+    % if form.radio.errors:
+        % for error in form.radio.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.accept_tos.label}: ${form.accept_tos()}</div>
+    % if form.accept_tos.errors:
+        % for error in form.accept_tos.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+    <div>${form.date.label}: ${form.date()}</div>
+    % if form.date.errors:
+        % for error in form.date.errors:
+            <li>${error}</li>
+        % endfor
+    % endif
+
+
+
+    <button type="submit"> Register </button>
+</form>
