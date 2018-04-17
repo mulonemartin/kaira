@@ -131,9 +131,11 @@ class KSessionCSRF(CSRF):
         self.form_meta = form.meta
         return super(KSessionCSRF, self).setup_form(form)
 
-    def create_session(self):
+    def generate_csrf_token(self, csrf_token_field):
 
         meta = self.form_meta
+        request = meta.request
+
         expire_seconds = int(meta.csrf_options['CSRF_COOKIE_EXPIRE'])
         if expire_seconds > 0:
             now = datetime.datetime.utcnow()
@@ -156,11 +158,13 @@ class KSessionCSRF(CSRF):
         time_limit = meta.csrf_options['CSRF_TIME_LIMIT']
         csrf_secret = meta.csrf_options['CSRF_SECRET']
 
-        cookies = meta.cookies
-        if not cookies:
-            cookies = CookieManager(options=cookies_options)
+        rand_code = None
+        if request.cookies:
+            if cookie_name in request.cookies:
+                rand_code = request.cookies[cookie_name]
 
-        rand_code = sha1(os.urandom(64)).hexdigest()
+        if not rand_code:
+            rand_code = sha1(os.urandom(64)).hexdigest()
 
         if time_limit:
             expires = (self.now() + time_limit).strftime(self.TIME_FORMAT)
@@ -172,27 +176,16 @@ class KSessionCSRF(CSRF):
         hmac_csrf = hmac.new(csrf_secret, csrf_build.encode('utf8'), digestmod=sha1)
         value_csrf = '%s##%s' % (expires, hmac_csrf.hexdigest())
 
+        cookies = meta.cookies
+        if not cookies:
+            cookies = CookieManager(options=cookies_options)
+
         cookies[cookie_name] = rand_code
         cookies[cookie_name].path = meta.csrf_options['CSRF_COOKIE_PATH']
         cookies[cookie_name].expires = expires_cookie
 
         meta.cookies = cookies
 
-        return value_csrf
-
-    def generate_csrf_token(self, csrf_token_field):
-
-        meta = self.form_meta
-
-        request = meta.request
-        cookie_name = meta.csrf_options['CSRF_COOKIE_NAME'] + "_" + meta.form_name
-
-        if request.method in ['POST', 'HEAD', 'PUT']:
-            if request.cookies:
-                if cookie_name in request.cookies:
-                    return request.cookies[cookie_name]
-
-        value_csrf = self.create_session()
         return value_csrf
 
     def delete_session(self):
@@ -289,7 +282,7 @@ class KairaForm(KairaFormBase):
                                                     csrf_options=csrf_options,
                                                     form_name=form_name), **kwargs)
 
-    def render_boostrap_form(self, path='/', send_caption='Send'):
+    def render_boostrap_form(self, path=None, send_caption='Send'):
         """ Render form"""
 
         r_fields = self.render_boostrap_fields()
@@ -297,6 +290,8 @@ class KairaForm(KairaFormBase):
             csrf_errors = self.csrf_token.errors
         else:
             csrf_errors = ''
+        if not path:
+            path = self.request.path
         submit = '<button type="submit"> {send_caption} </button>'.format(send_caption=send_caption)
         xml = '<form method="POST" enctype="multipart/form-data" action="{path}">' \
               '{csrf_token} {csrf_errors}' \

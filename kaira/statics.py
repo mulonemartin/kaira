@@ -24,7 +24,6 @@ class StaticHandler:
 
     def serve_static(self, environ, start_response):
 
-        log.info("ENTRA>>>>")
         path = decode_path_info(environ['PATH_INFO'])
         if self.whitenoise.autorefresh:
             static_file = self.whitenoise.find_file(path)
@@ -33,5 +32,4 @@ class StaticHandler:
         if static_file is None:
             raise HTTPNotFound()
         else:
-            log.info("ENTRA>>>>222")
             return self.whitenoise.serve(static_file, environ, start_response)
