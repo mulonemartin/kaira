@@ -17,7 +17,6 @@ kaira\statics.py
 kaira\templates.py
 kaira\utils.py
 kaira\wrapper.py
-kaira\wtf - copia.py
 kaira\wtf.py
 kaira\routing\__init__.py
 kaira\routing\builders.py

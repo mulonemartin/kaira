@@ -9,7 +9,6 @@ import hashlib
 
 from wtforms import Form
 from wtforms.widgets import HiddenInput
-from wtforms.csrf.session import SessionCSRF
 from wtforms.csrf.core import CSRF
 from wtforms import ValidationError
 
@@ -33,13 +32,17 @@ class KairaFormBase(Form):
             input_method = request.query
         elif request.method == 'POST':
             input_method = request.form
-
         for key, value in input_method.items():
+            if not key:
+                continue
             if isinstance(value, list) and len(value) == 1:
                 value = value[0]
             input_vars[key] = value
 
-        input_vars = CIMultiDict(**input_vars)
+        if input_vars:
+            input_vars = CIMultiDict(**input_vars)
+        else:
+            input_vars = None
 
         super().__init__(formdata=input_vars, **kwargs)
         #self.generate_form_name()  # Generamos el nombre del form (uuid)

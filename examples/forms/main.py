@@ -9,13 +9,13 @@ from wtforms import Form, BooleanField, StringField, validators, \
 from kaira.app import App
 from kaira.response import response
 from kaira.log import log
-from kaira.wtf import KairaForm
+from kaira.wtf import KairaForm, KairaFormBase
 
 
 app = App()
 
 
-class SigninForm(KairaForm):
+class SigninForm(KairaFormBase):
     username = StringField('Username', [validators.Length(min=4, max=25)])
     password = StringField('Password', [validators.Length(min=6, max=35)])
 
@@ -66,8 +66,17 @@ def index(request):
 @app.route("/signin", methods=['GET', 'POST'])
 def form_signin(request):
 
-    form = SigninForm(request)
+    class SigninDB:
+        username = 'default_value'
+        password = 'default_value'
+
+    signin_db = SigninDB()
+
+    form = SigninForm(request, obj=signin_db)
     if form.validate_on_submit():
+        form.populate_obj(signin_db)
+        print(signin_db.username)
+        print(signin_db.password)
         return response.redirect('/account')
 
     return response.template('signin.html', form=form)
