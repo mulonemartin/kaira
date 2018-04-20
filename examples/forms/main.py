@@ -67,8 +67,8 @@ def index(request):
 def form_signin(request):
 
     class SigninDB:
-        username = 'default_value'
-        password = 'default_value'
+        username = 'juanpirulo'
+        password = 'miclave'
 
     signin_db = SigninDB()
 
@@ -77,7 +77,11 @@ def form_signin(request):
         form.populate_obj(signin_db)
         print(signin_db.username)
         print(signin_db.password)
-        return response.redirect('/account')
+        if signin_db.password == 'miclave':
+            # se genera la sesion y redirige
+            return response.redirect('/account')
+        else:
+            form.password.errors.append('No es valido la clave')
 
     return response.template('signin.html', form=form)
 
