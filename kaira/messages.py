@@ -7,6 +7,7 @@ import datetime
 from kaira.signing import dumps as signing_dumps
 from kaira.signing import loads as signing_loads
 from kaira.cookie import CookieManager
+from kaira.wrapper import ContextManager
 
 
 DEBUG = 10
@@ -207,3 +208,40 @@ class MessagesManager:
 
             return '\n'.join(xml_messages)
         return ''
+
+
+class ContextMessages(ContextManager):
+    messages_manager = None
+
+    def __init__(self, options=None):
+        self.options = options
+        messages_manager = MessagesManager(options)
+        self.messages_manager = messages_manager
+
+    def on_start(self, request):
+        self.messages_manager.start(request)
+
+    def add_message(self, msg, lvl=INFO):
+        self.messages_manager.add_message(msg, lvl)
+
+    def info(self, msg):
+        self.messages_manager.add_message(msg, msg_level=INFO)
+
+    def debug(self, msg):
+        self.messages_manager.add_message(msg, msg_level=DEBUG)
+
+    def warning(self, msg):
+        self.messages_manager.add_message(msg, msg_level=WARNING)
+
+    def error(self, msg):
+        self.messages_manager.add_message(msg, msg_level=ERROR)
+
+    def success(self, msg):
+        self.messages_manager.add_message(msg, msg_level=SUCCESS)
+
+    def render(self):
+        return self.messages_manager.render()
+
+    @property
+    def response_cookies(self):
+        return self.messages_manager.response_cookies

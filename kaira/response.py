@@ -8,6 +8,9 @@ except:
     from json import dumps as json_dumps
 
 from .templates import MakoTemplate, template
+from kaira.wrapper import ContextManager
+from kaira.messages import MessagesManager
+from kaira.cookie import CookieManager
 
 # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 # see http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
@@ -240,4 +243,48 @@ class HandleResponse:
 
         return resp
 
+
 response = HandleResponse()
+
+
+class ContextResponse(ContextManager):
+    messages = None
+    cookies = None
+
+    def __init__(self, options=None):
+        self.options = options
+        self.messages = MessagesManager(options)
+        self.cookies = None
+
+    def on_start(self, request):
+        self.messages.start(request)
+
+    def template(self, tpl, status_code=200,  cookies=None, encoding="utf-8", headers=None, **kwargs):
+
+        if self.messages.response_cookies:
+            cookies = self.messages.response_cookies
+
+        kwargs['flash_messages'] = self.messages
+
+        return response.template(tpl, status_code=status_code, cookies=cookies, encoding=encoding, headers=headers, **kwargs)
+
+    def error(self, body, status_code=400, cookies=None, encoding="utf-8", headers=None):
+
+        return response.error(body, status_code=status_code, cookies=cookies, encoding=encoding, headers=headers)
+
+    def redirect(self, to, status_code=302, cookies=None, encoding="utf-8", headers=None):
+        """ redirect """
+
+        return response.redirect(to, status_code=status_code, cookies=cookies, encoding=encoding, headers=headers)
+
+    def html(self, body, status_code=200, cookies=None, encoding="utf-8", headers=None):
+
+        return response.html(body, status_code=status_code, cookies=cookies, encoding=encoding, headers=headers)
+
+    def json(self, body, status_code=200, cookies=None, encoding="utf-8", headers=None):
+
+        return response.json(body, status_code=status_code, cookies=cookies, encoding=encoding, headers=headers)
+
+    def text(self, body, status_code=200, cookies=None, encoding="utf-8", headers=None):
+
+        return response.text(body, status_code=status_code, cookies=cookies, encoding=encoding, headers=headers)
