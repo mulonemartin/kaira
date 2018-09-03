@@ -8,13 +8,16 @@ kaira\blueprints.py
 kaira\config.py
 kaira\cookie.py
 kaira\exceptions.py
-kaira\flash.py
 kaira\helpers.py
 kaira\log.py
+kaira\messages - copia.py
+kaira\messages.py
 kaira\request.py
 kaira\response.py
 kaira\router.py
 kaira\server.py
+kaira\sessions.py
+kaira\signing.py
 kaira\statics.py
 kaira\templates.py
 kaira\utils.py
