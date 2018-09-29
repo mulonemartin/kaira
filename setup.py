@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='kaira',
-    version='0.2.1',
+    version='0.2.3',
     packages=['kaira', 'kaira.routing'],
     url='https://github.com/mulonemartin/kaira/',
     license='MIT',
