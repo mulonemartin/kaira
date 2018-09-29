@@ -69,7 +69,7 @@ class HTTPRequest(object):
     app = None
     auth = None
 
-    def __init__(self, environ: dict, encoding: str, max_content_lenght: int=4*1024*1024) -> None:
+    def __init__(self, environ: dict, encoding: str, max_content_lenght: int=4*1024*1024*1024) -> None:
         self.environ = environ
         self.encoding = encoding
         self.max_content_lenght = max_content_lenght
