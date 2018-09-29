@@ -243,6 +243,24 @@ class HandleResponse:
 
         return resp
 
+    def template_json(self, tpl, status_code=200, cookies=None, encoding="utf-8", headers=None, **kwargs):
+        """ template """
+
+        body = self.render_template(tpl, **kwargs)
+
+        resp = HTTPResponse('application/json; charset=' + encoding, encoding,
+                            status_code=status_code)
+        if cookies:
+            resp.cookies = cookies
+        if headers:
+            for header in headers:
+                resp.headers.append(header)
+
+        body = dict(content=body)
+        resp.write_bytes(json_dumps(body).encode(encoding))
+
+        return resp
+
 
 response = HandleResponse()
 
